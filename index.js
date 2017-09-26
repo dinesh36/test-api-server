@@ -10,4 +10,5 @@ let sqlite3 = require('sqlite3').verbose(),
 app.use(bodyParser.json());
 app.use(response.handler());
 require('./models/users')(app,db);
+console.log(`server is running on ${port} port`);
 app.listen((port));
