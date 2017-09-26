@@ -1,0 +1,25 @@
+{
+  "name": "test-api-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.15.5",
+    "sqlite3": "^3.1.12"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dinesh36/test-api-server.git"
+  },
+  "author": "Dinesh Dabhi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dinesh36/test-api-server/issues"
+  },
+  "homepage": "https://github.com/dinesh36/test-api-server#readme"
+}
