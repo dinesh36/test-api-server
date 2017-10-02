@@ -3,7 +3,7 @@ module.exports = function (app, db) {
 	db.serialize(()=>{
 		db.run("CREATE TABLE users (id NUMBER,firstName TEXT,lastName TEXT,username TEXT,email TEXT,age NUMBER)");
 		var stmt = db.prepare("INSERT INTO users VALUES (?,?,?,?,?,?)");
-		for (var i = 1; i <= 10; i++) {
+		for (var i = 1; i <= 50; i++) {
 			let text = 'abcdefghijklmnopqrstuvwxyz',
 				textLength = text.length,
 				firstNameRandom = text.charAt(Math.floor(Math.random() * textLength)),
@@ -17,7 +17,7 @@ module.exports = function (app, db) {
 	});
 
 	//get users
-	app.get('/users', (req, res) => {
+	app.get('/api/users', (req, res) => {
 		let users = [];
 			sortParams = {sortBy:req.query.sortBy,sortOrder:req.query.sortOrder || 'asc'};
 			sortQuery = sortParams.sortBy?`order by ${sortParams.sortBy} ${sortParams.sortOrder}`:'order by id desc',
@@ -53,14 +53,14 @@ module.exports = function (app, db) {
 	});
 
 	//get user
-	app.get('/users/:id', (req, res) => {
+	app.get('/api/users/:id', (req, res) => {
 		db.all(`SELECT * FROM users where id=${req.params.id}`, function (err,users) {
 			res.sendResponse(users);
 		});
 	});
 
 	//add user
-	app.post('/users', (req, res) => {
+	app.post('/api/users', (req, res) => {
 		let userData = req.body,
 			stmt = db.prepare("INSERT INTO users VALUES (?,?,?,?,?,?)"),
 			lastId = 0;
@@ -84,7 +84,7 @@ module.exports = function (app, db) {
 	});
 
 	//update user
-	app.put('/users/:id', (req, res) => {
+	app.put('/api/users/:id', (req, res) => {
 		let userId = req.params.id;
 		let userData = req.body;
 		db.run(`update users set firstName="${userData.firstName}",lastName="${userData.lastName}",userName="${userData.userName}",email="${userData.email}",age=${userData.age} where id=${userId}`,
@@ -98,7 +98,7 @@ module.exports = function (app, db) {
 	});
 
 	//delete user
-	app.delete('/users/:id', (req, res) => {
+	app.delete('/api/users/:id', (req, res) => {
 		let usersId = req.params.id;
 		db.all(`delete from users where id=${usersId}`, function (err) {
 			if(err){
