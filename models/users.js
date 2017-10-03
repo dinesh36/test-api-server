@@ -1,7 +1,7 @@
 module.exports = function (app, db) {
 	//insert data in users table
 	db.serialize(()=>{
-		db.run("CREATE TABLE users (id NUMBER,firstName TEXT,lastName TEXT,username TEXT,email TEXT,age NUMBER)");
+		db.run("CREATE TABLE users (id NUMBER,firstName TEXT,lastName TEXT,userName TEXT,email TEXT,age NUMBER)");
 		var stmt = db.prepare("INSERT INTO users VALUES (?,?,?,?,?,?)");
 		for (var i = 1; i <= 50; i++) {
 			let text = 'abcdefghijklmnopqrstuvwxyz',
@@ -22,6 +22,9 @@ module.exports = function (app, db) {
 			sortParams = {sortBy:req.query.sortBy,sortOrder:req.query.sortOrder || 'asc'};
 			sortQuery = sortParams.sortBy?`order by ${sortParams.sortBy} ${sortParams.sortOrder}`:'order by id desc',
 			whereQuery = '',
+			page = req.query.page || 1,  //page number
+			rows = req.query.rows || 10, //rows per page
+			offset = 0, //offset to skip the data
 			whereQueryArray = [];
 		if(req.query.firstName){
 			whereQueryArray.push(`firstName like "%${req.query.firstName}%"`)
@@ -41,15 +44,27 @@ module.exports = function (app, db) {
 		if(whereQueryArray.length){
 			whereQuery = ' where '+whereQueryArray.join(' and ');
 		}
-		query = `SELECT * FROM users ${whereQuery} ${sortQuery}`;
-		console.log(query);
-		db.all(query, function (err,users) {
+		if(page>1){
+			offset = rows*(page-1)
+		}
+		query = `SELECT * FROM users ${whereQuery} ${sortQuery}`/* limit ${rows} offset ${offset}`*/;
+		db.get(`select count(*) from users`,function(err,count){
 			if(err){
 				res.sendError(err);
 			} else {
-				res.sendResponse(users);
+				db.all(query, function (err,users) {
+					if(err){
+						res.sendError(err);
+					} else {
+						res.sendResponse({
+							count:count['count(*)'],
+							rows:users
+						});
+					}
+				});
 			}
-		});
+		})
+
 	});
 
 	//get user
